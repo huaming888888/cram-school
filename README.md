@@ -1,1 +1,1 @@
-https://zihuanfeng520.github.io/cram1/
+https://huaming888888.github.io/cram-school/
