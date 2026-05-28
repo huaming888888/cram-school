@@ -268,6 +268,14 @@
   
   .cd-title { font-size: 32px; font-weight: 900; letter-spacing: 6px; color: var(--gold); margin-bottom: 28px; }
   
+  .cd-date-text {
+    font-size: 15px;
+    color: var(--stone-light);
+    margin-top: -15px; /* 向上微調與標題的間距 */
+    margin-bottom: 5px; /* 與下方倒數數字的間距 */
+    letter-spacing: 1px;
+  }
+
   .cd-time { 
     display: flex; align-items: baseline; justify-content: center; 
     flex-wrap: nowrap; 
@@ -526,14 +534,17 @@
   <div class="countdown-grid">
     <div class="cd-box reveal">
       <div class="cd-title">國中會考</div>
+      <div class="cd-date-text" id="cd-date-huikao"></div>
       <div class="cd-time" id="cd-huikao">--</div>
     </div>
     <div class="cd-box reveal reveal-delay-1">
       <div class="cd-title">大學學測</div>
+      <div class="cd-date-text" id="cd-date-xuece"></div>
       <div class="cd-time" id="cd-xuece">--</div>
     </div>
     <div class="cd-box reveal reveal-delay-2">
       <div class="cd-title">分科測驗</div>
+      <div class="cd-date-text" id="cd-date-fenke"></div>
       <div class="cd-time" id="cd-fenke">--</div>
     </div>
   </div>
@@ -810,6 +821,15 @@
       rcScript.src = "https://www.google.com/recaptcha/api.js";
       rcScript.async = true; rcScript.defer = true;
       document.head.appendChild(rcScript);
+      
+      // 格式化日期並填入倒數計時上方的文字
+      function formatExamDate(dateStr) {
+          const date = new Date(dateStr);
+          return `離${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日考試 還剩`;
+      }
+      document.getElementById('cd-date-huikao').innerText = formatExamDate(SITE_CONFIG.examHuikao);
+      document.getElementById('cd-date-xuece').innerText = formatExamDate(SITE_CONFIG.examXuece);
+      document.getElementById('cd-date-fenke').innerText = formatExamDate(SITE_CONFIG.examFenke);
   })();
 
   document.addEventListener('DOMContentLoaded', function() {
