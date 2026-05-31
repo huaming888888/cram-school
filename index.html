@@ -177,89 +177,99 @@
 
   .menu-toggle { display: none; font-size: 28px; color: var(--ink); cursor: pointer; }
 
-  /* ── 廣告輪播 Banner ── */
-  #ad-banner-section {
-    width: 100%;
-    background: var(--ink);
-    overflow: hidden;
-    user-select: none;
-    padding-top: 80px; /* 導覽列高度補償 */
-  }
-  #ad-slider-track {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 260px;
+  /* ── 新增：動態 3D Cover Flow 輪播圖 ── */
+  .ad-carousel-section {
     position: relative;
+    width: 100%;
+    background: var(--ink); /* 深色背景讓圖片跟倒影更跳脫，符合音樂播放器質感 */
+    padding: 60px 0 80px 0;
+    margin-top: 88px; /* 避開導覽列 */
+    overflow: hidden;
   }
-  #ad-slider-dots {
+  .carousel-container {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    height: 350px;
+    margin: 0 auto;
+    perspective: 1200px; /* 3D 透視深度 */
+    transform-style: preserve-3d;
+  }
+  .carousel-slide {
+    position: absolute;
+    top: 0;
+    left: 15%; /* 依照比例置中 */
+    width: 70%;
+    height: 100%;
+    /* 平滑過渡動畫：位置、透明度、層級 */
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.6s ease, z-index 0.6s;
+    opacity: 0;
+    border-radius: 8px;
+    /* 加入老闆要的下方倒影效果 (Reflection) */
+    -webkit-box-reflect: below 5px linear-gradient(transparent, transparent 75%, rgba(255,255,255,0.4));
+  }
+  .carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+  /* 中間主要的圖片 */
+  .carousel-slide.active {
+    transform: translateX(0) scale(1) translateZ(0);
+    opacity: 1;
+    z-index: 10;
+  }
+  /* 左邊次要的圖片 */
+  .carousel-slide.prev {
+    transform: translateX(-40%) scale(0.8) translateZ(-100px);
+    opacity: 0.5;
+    z-index: 5;
+  }
+  /* 右邊次要的圖片 */
+  .carousel-slide.next {
+    transform: translateX(40%) scale(0.8) translateZ(-100px);
+    opacity: 0.5;
+    z-index: 5;
+  }
+  /* 其他隱藏在後方的圖片 */
+  .carousel-slide.hidden {
+    transform: translateX(0) scale(0.6) translateZ(-200px);
+    opacity: 0;
+    z-index: 1;
+    pointer-events: none; /* 避免點擊干擾 */
+  }
+
+  /* 底部指示器 (小圓點) */
+  .carousel-dots {
     display: flex;
     justify-content: center;
-    align-items: center;
-    gap: 10px;
-    padding: 16px 0 20px;
+    gap: 12px;
+    margin-top: 50px; /* 留空間給倒影 */
+    position: relative;
+    z-index: 20;
   }
-  .ad-card {
-    position: absolute;
-    border-radius: 6px;
-    overflow: hidden;
-    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-    cursor: pointer;
-  }
-  .ad-card img {
-    width: 100%; height: 100%;
-    object-fit: cover; display: block;
-    pointer-events: none;
-  }
-  .ad-card.pos-center {
-    width: 58%; height: 210px;
-    z-index: 3; opacity: 1;
-    transform: translateX(0) scale(1);
-    box-shadow: 0 20px 60px rgba(0,0,0,.65);
-    border: 1px solid rgba(201,168,76,.5);
-  }
-  .ad-card.pos-left {
-    width: 44%; height: 148px;
-    z-index: 2; opacity: 0.38;
-    transform: translateX(-60%) scale(0.87);
-    border: 1px solid rgba(201,168,76,.15);
-  }
-  .ad-card.pos-right {
-    width: 44%; height: 148px;
-    z-index: 2; opacity: 0.38;
-    transform: translateX(60%) scale(0.87);
-    border: 1px solid rgba(201,168,76,.15);
-  }
-  .ad-card.pos-hidden {
-    width: 34%; height: 100px;
-    z-index: 1; opacity: 0;
-    pointer-events: none;
-    transform: translateX(0) scale(0.65);
-  }
-  .ad-dot {
-    width: 8px; height: 8px;
+  .carousel-dots .dot {
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
-    background: rgba(255,255,255,.22);
-    transition: all .3s ease;
+    background-color: #888; /* 灰色 */
     cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
   }
-  .ad-dot.active {
-    background: #fff;
-    transform: scale(1.3);
-  }
-  @media (max-width: 900px) {
-    #ad-banner-section { padding-top: 60px; }
-    #ad-slider-track { height: 180px; }
-    .ad-card.pos-center { width: 80%; height: 145px; }
-    .ad-card.pos-left  { width: 55%; height: 105px; transform: translateX(-65%) scale(0.85); }
-    .ad-card.pos-right { width: 55%; height: 105px; transform: translateX(65%) scale(0.85); }
+  .carousel-dots .dot.active {
+    background-color: #fff; /* 白色 */
+    transform: scale(1.3); /* 稍微放大提示目前位置 */
+    box-shadow: 0 0 8px rgba(255,255,255,0.6);
   }
 
   /* ── 主視覺 (Hero) ── */
   .hero {
-    min-height: 100vh;
+    min-height: calc(100vh - 88px); 
     display: flex; flex-direction: column; justify-content: center;
-    padding: 120px 60px 80px 60px;
+    padding: 80px 60px 80px 60px;
     position: relative; overflow: hidden;
     text-align: center;
   }
@@ -349,8 +359,8 @@
   .cd-date-text {
     font-size: 15px;
     color: var(--stone-light);
-    margin-top: -15px;
-    margin-bottom: 5px;
+    margin-top: -15px; /* 向上微調與標題的間距 */
+    margin-bottom: 5px; /* 與下方倒數數字的間距 */
     letter-spacing: 1px;
   }
 
@@ -401,7 +411,7 @@
   }
   .phil-text { font-size: 16px; line-height: 2.2; color: var(--stone); margin-bottom: 20px; text-align: center; }
 
-  /* ── 線上試聽 & 環境展示 ── */
+  /* ── 線上試聽 & 環境展示 (完美平分版面設計) ── */
   .trial { background: var(--cream); text-align: center; padding: 100px 4vw; }
   .gallery { background: var(--warm-white); text-align: center; padding: 100px 4vw; } 
   
@@ -422,7 +432,7 @@
     border-left: 3px solid var(--gold); padding-left: 12px; letter-spacing: 1px;
   }
   .video-container {
-    position: relative; padding-bottom: 56.25%;
+    position: relative; padding-bottom: 56.25%; /* 16:9 */
     height: 0; overflow: hidden; border-radius: 8px;
     box-shadow: 0 10px 30px rgba(0,0,0,.08);
     border: 1px solid rgba(201,168,76,.1);
@@ -540,7 +550,10 @@
     }
     .nav-links.active { display: flex; }
     
-    .hero { padding: 120px 24px 60px; }
+    .ad-carousel-section { margin-top: 65px; padding: 40px 0; }
+    .carousel-container { height: 200px; }
+
+    .hero { padding: 60px 24px 60px; min-height: auto; }
     section { padding: 60px 24px; }
     
     .countdown-grid { grid-template-columns: 1fr; gap: 20px; }
@@ -587,16 +600,12 @@
   </ul>
 </nav>
 
-<!-- ═══════════════════════════════════════════════
-     廣告活動輪播 Banner
-     圖片請放在 ad/ 資料夾，命名 ad1.jpg、ad2.png…依序
-     系統會自動偵測數量，無需手動修改程式碼
-════════════════════════════════════════════════ -->
-<div id="ad-banner-section">
-  <div id="ad-slider-track"></div>
-  <div id="ad-slider-dots"></div>
-</div>
-<!-- ═══════════════════════════════════════════════ -->
+<section id="ad-carousel-section" class="ad-carousel-section" style="display: none;">
+  <div class="carousel-container" id="carouselContainer">
+    </div>
+  <div class="carousel-dots" id="carouselDots">
+    </div>
+</section>
 
 <section id="home" class="hero">
   <div class="hero-content">
@@ -922,7 +931,7 @@
   })();
 
   document.addEventListener('DOMContentLoaded', function() {
-    // 初始化 EmailJS (自動帶入設定檔的 API Key)
+    // 初始化 EmailJS
     emailjs.init(SITE_CONFIG.emailjsPublicKey);
 
     // --- 音樂按鈕與全域互動解鎖機制 ---
@@ -962,7 +971,7 @@
         musicBtn.addEventListener('click', function(e) { e.stopPropagation(); toggleMusic(); });
     }
     
-    // --- 圖片自動帶入邏輯 ---
+    // --- 環境照片動態帶入邏輯 ---
     const autoElements = document.querySelectorAll('.auto-img, .auto-icon');
     const possibleExts = ['.jpg', '.png', '.jpeg', '.webp', '.JPG', '.PNG', '.JPEG', '.WEBP'];
     
@@ -985,13 +994,124 @@
         tryNextExtension(); 
     });
 
+    // --- 新增：動態 3D Cover Flow 載入與輪播邏輯 ---
+    const carouselSection = document.getElementById('ad-carousel-section');
+    const carouselContainer = document.getElementById('carouselContainer');
+    const dotsContainer = document.getElementById('carouselDots');
+    
+    let loadedAds = [];
+    let currentAdIndex = 0;
+    let adInterval;
+    let adIndexToTry = 1; // 從 ad1 開始找
+
+    // 探測機制：依序尋找 ad1, ad2... 直到找不到為止
+    function loadNextAd() {
+        let extIdx = 0;
+        function tryExt() {
+            if (extIdx < possibleExts.length) {
+                const img = new Image();
+                const src = `ad/ad${adIndexToTry}${possibleExts[extIdx]}`;
+                img.onload = () => {
+                    // 找到圖片了，加入陣列，並繼續尋找下一張 (ad2, ad3...)
+                    loadedAds.push(src);
+                    adIndexToTry++;
+                    loadNextAd(); 
+                };
+                img.onerror = () => {
+                    // 這個副檔名不對，試試下一個副檔名 (.png, .jpeg...)
+                    extIdx++;
+                    tryExt(); 
+                };
+                img.src = src;
+            } else {
+                // 如果所有副檔名都試過還是找不到，代表資料夾的圖片就到這邊了
+                initCarousel();
+            }
+        }
+        tryExt();
+    }
+
+    // 將找到的圖片丟進 HTML，並啟動 3D 輪播
+    function initCarousel() {
+        if (loadedAds.length === 0) {
+            // 如果連 ad1 都沒找到，就隱藏整個廣告區塊，畫面才不會空一塊
+            carouselSection.style.display = 'none';
+            return;
+        }
+
+        carouselSection.style.display = 'block'; // 顯示區塊
+
+        loadedAds.forEach((src, idx) => {
+            // 建立圖片容器
+            const slide = document.createElement('div');
+            slide.className = 'carousel-slide';
+            const img = document.createElement('img');
+            img.src = src;
+            slide.appendChild(img);
+            carouselContainer.appendChild(slide);
+
+            // 建立對應的小圓點
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+            dot.dataset.index = idx;
+            dot.onclick = () => {
+                // 點擊圓點切換圖片
+                clearInterval(adInterval); // 先暫停自動切換
+                currentAdIndex = idx;
+                updateCarousel();
+                adInterval = setInterval(nextAd, 3000); // 重新啟動三秒計時
+            };
+            dotsContainer.appendChild(dot);
+        });
+
+        updateCarousel(); // 初始化排版
+        adInterval = setInterval(nextAd, 3000); // 設定三秒切換一次
+    }
+
+    // 負責往左邊移動 (下一張)
+    function nextAd() {
+        currentAdIndex = (currentAdIndex + 1) % loadedAds.length;
+        updateCarousel();
+    }
+
+    // 核心排版邏輯：決定誰在中間 (active)、誰在左邊 (prev)、誰在右邊 (next)
+    function updateCarousel() {
+        const slides = document.querySelectorAll('.carousel-slide');
+        const dots = document.querySelectorAll('.carousel-dots .dot');
+        const total = slides.length;
+
+        slides.forEach((slide, idx) => {
+            slide.className = 'carousel-slide'; // 先把狀態清空
+            
+            if (idx === currentAdIndex) {
+                slide.classList.add('active'); // 目前的主圖
+            } else if (idx === (currentAdIndex - 1 + total) % total) {
+                slide.classList.add('prev'); // 左邊的次要圖
+            } else if (idx === (currentAdIndex + 1) % total) {
+                slide.classList.add('next'); // 右邊的次要圖
+            } else {
+                slide.classList.add('hidden'); // 其他的圖躲在後面
+            }
+        });
+
+        // 更新圓點顏色 (灰色變白色)
+        dots.forEach((dot, idx) => {
+            dot.classList.toggle('active', idx === currentAdIndex);
+        });
+    }
+
+    // 啟動探測器
+    loadNextAd();
+    // ----------------------------------------------------
+
+
     // --- 抓取 IP ---
     fetch('https://api.ipify.org?format=json')
       .then(response => response.json())
       .then(data => { if(data.ip) { document.getElementById('sender-ip').value = data.ip; } })
       .catch(error => console.log('IP 抓取略過'));
 
-    // --- 倒數計時邏輯 (使用設定區的日期) ---
+    // --- 倒數計時邏輯 ---
     const exams = [
         { id: 'cd-huikao', date: SITE_CONFIG.examHuikao }, 
         { id: 'cd-xuece', date: SITE_CONFIG.examXuece },  
@@ -1220,155 +1340,6 @@
                 submitBtn.disabled = false;
             });
     });
-
-    // =========================================================
-    // 廣告活動輪播 Banner 初始化
-    // 圖片放在 ad/ 資料夾，命名 ad1.jpg、ad2.png… 依序排列
-    // 系統自動偵測數量，最多支援 20 張，無需手動修改
-    // =========================================================
-    (function initAdBanner() {
-      const EXTS = ['.jpg','.png','.jpeg','.webp','.JPG','.PNG','.JPEG','.WEBP'];
-      const MAX_ADS = 20;
-      const SLIDE_INTERVAL = 3000;
-
-      // 嘗試依序測試副檔名，找到可載入的圖片路徑
-      function probeImg(base, extIdx) {
-        return new Promise(function(resolve) {
-          if (extIdx >= EXTS.length) { resolve(null); return; }
-          var img = new Image();
-          img.onload  = function() { resolve(base + EXTS[extIdx]); };
-          img.onerror = function() { probeImg(base, extIdx + 1).then(resolve); };
-          img.src = base + EXTS[extIdx];
-        });
-      }
-
-      // 從 ad/ad1 開始，逐一偵測直到找不到為止
-      function findAllAds() {
-        var found = [];
-        var i = 1;
-        function next() {
-          if (i > MAX_ADS) return Promise.resolve(found);
-          return probeImg('ad/ad' + i, 0).then(function(src) {
-            if (src) { found.push(src); i++; return next(); }
-            return found;
-          });
-        }
-        return next();
-      }
-
-      // 計算每張卡片相對於目前中心的位置狀態
-      function getPosClass(offset, total) {
-        if (offset === 0)         return 'pos-center';
-        if (offset === 1)         return 'pos-right';
-        if (offset === total - 1) return 'pos-left';
-        return 'pos-hidden';
-      }
-
-      // 建立輪播 DOM 並啟動
-      function buildBanner(images) {
-        var total = images.length;
-
-        // 若倉庫內沒有任何廣告圖，隱藏整個 Banner 區塊
-        if (total === 0) {
-          document.getElementById('ad-banner-section').style.display = 'none';
-          return;
-        }
-
-        var track    = document.getElementById('ad-slider-track');
-        var dotsWrap = document.getElementById('ad-slider-dots');
-        var current  = 0;
-        var animating = false;
-        var timer    = null;
-
-        // 建立圖片卡片
-        var cards = images.map(function(src, idx) {
-          var div = document.createElement('div');
-          div.className = 'ad-card';
-          var img = document.createElement('img');
-          img.src = src;
-          img.alt = '活動廣告 ' + (idx + 1);
-          img.draggable = false;
-          img.onerror = function() { div.style.background = 'rgba(255,255,255,0.03)'; };
-          div.appendChild(img);
-          track.appendChild(div);
-          return div;
-        });
-
-        // 建立底部圓點指示器
-        var dots = images.map(function(_, idx) {
-          var d = document.createElement('div');
-          d.className = 'ad-dot';
-          d.addEventListener('click', function() {
-            if (!animating && idx !== current) { goTo(idx); resetTimer(); }
-          });
-          dotsWrap.appendChild(d);
-          return d;
-        });
-
-        // 渲染當前狀態
-        function render(idx) {
-          cards.forEach(function(card, i) {
-            var offset = ((i - idx) % total + total) % total;
-            card.className = 'ad-card ' + getPosClass(offset, total);
-          });
-          dots.forEach(function(dot, i) {
-            dot.classList.toggle('active', i === idx);
-          });
-        }
-
-        // 切換到指定索引
-        function goTo(next) {
-          if (animating) return;
-          animating = true;
-          current = ((next % total) + total) % total;
-          render(current);
-          setTimeout(function() { animating = false; }, 650);
-        }
-
-        function startTimer() {
-          timer = setInterval(function() { goTo(current + 1); }, SLIDE_INTERVAL);
-        }
-        function resetTimer() {
-          clearInterval(timer);
-          startTimer();
-        }
-
-        // 滑鼠懸停時暫停自動播放
-        var section = document.getElementById('ad-banner-section');
-        section.addEventListener('mouseenter', function() { clearInterval(timer); });
-        section.addEventListener('mouseleave', function() { startTimer(); });
-
-        // 點擊左右側卡片可手動切換
-        cards.forEach(function(card, i) {
-          card.addEventListener('click', function() {
-            var offset = ((i - current) % total + total) % total;
-            if (offset === 1)         { goTo(current + 1); resetTimer(); }
-            else if (offset === total - 1) { goTo(current - 1); resetTimer(); }
-          });
-        });
-
-        // 觸控滑動支援（手機版）
-        var touchStartX = 0;
-        section.addEventListener('touchstart', function(e) {
-          touchStartX = e.touches[0].clientX;
-        }, { passive: true });
-        section.addEventListener('touchend', function(e) {
-          var diff = touchStartX - e.changedTouches[0].clientX;
-          if (Math.abs(diff) > 40) {
-            goTo(diff > 0 ? current + 1 : current - 1);
-            resetTimer();
-          }
-        }, { passive: true });
-
-        render(0);
-        startTimer();
-      }
-
-      findAllAds().then(buildBanner);
-    })();
-    // =========================================================
-    // 廣告輪播結束
-    // =========================================================
 
   });
 </script>
